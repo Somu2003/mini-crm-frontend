@@ -1,10 +1,20 @@
 import requests
 import streamlit as st
 
+import streamlit as st
+import requests
+import os
+
 class APIClient:
     def __init__(self):
-        # Direct Railway backend URL
-        self.base_url = "https://crm-backend-production-2231.up.railway.app"
+        # FIXED: Use Railway backend URL via Streamlit secrets
+        try:
+            self.base_url = st.secrets["https://crm-backend-production-2231.up.railway.app/"]
+            st.info(f"✅ Connected to backend: {self.base_url}")
+        except KeyError:
+            # Fallback for local development
+            self.base_url = "http://localhost:8000"
+            st.warning("⚠️ Using localhost backend (development mode)")
         
         self.session = requests.Session()
         self.session.headers.update({
@@ -35,11 +45,25 @@ class APIClient:
                 return None
             
         except requests.exceptions.ConnectionError:
-            st.error("❌ Cannot connect to server. Please ensure backend is running on http://localhost:8000")
+            st.error(f"❌ Cannot connect to backend server at {self.base_url}. Please check if backend is running.")
             return None
         except Exception as e:
             st.error(f"❌ Request failed: {str(e)}")
             return None
+    
+    # Your existing API methods...
+    def get_customers(self, search=None):
+        params = {'search': search} if search else None
+        return self._make_request('GET', '/customers', params=params) or []
+    
+    def get_campaigns(self):
+        return self._make_request('GET', '/campaigns') or []
+    
+    def create_campaign(self, campaign_data):
+        return self._make_request('POST', '/campaigns', data=campaign_data, success_message="🚀 Campaign launched!")
+    
+    def get_dashboard_stats(self):
+        return self._make_request('GET', '/analytics/dashboard')
     
     # ================================
     # CUSTOMER CRUD METHODS
