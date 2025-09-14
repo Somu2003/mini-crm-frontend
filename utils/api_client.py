@@ -3,6 +3,10 @@ import streamlit as st
 
 class APIClient:
     def __init__(self):
+        try:
+            self.base_url = st.secrets["https://crm-backend-production-2231.up.railway.app/"]
+        except:
+            self.base_url = "http://localhost:8000"
         self.base_url = "http://localhost:8000"
         self.session = requests.Session()
         self.session.headers.update({
