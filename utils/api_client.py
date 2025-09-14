@@ -3,7 +3,13 @@ import streamlit as st
 
 class APIClient:
     def __init__(self):
-        self.base_url = "http://localhost:8000"
+        # Use Railway backend URL via Streamlit secrets
+        try:
+            self.base_url = st.secrets["BACKEND_URL"]
+        except KeyError:
+            # Fallback for local development
+            self.base_url = "http://localhost:8000"
+        
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
