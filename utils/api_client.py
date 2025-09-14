@@ -3,21 +3,13 @@ import streamlit as st
 
 class APIClient:
     def __init__(self):
-<<<<<<< HEAD
         # Use Railway backend URL via Streamlit secrets
         try:
-            self.base_url = st.secrets["BACKEND_URL"]
+            self.base_url = st.secrets["https://crm-backend-production-2231.up.railway.app/"]
         except KeyError:
             # Fallback for local development
             self.base_url = "http://localhost:8000"
         
-=======
-        try:
-            self.base_url = st.secrets["https://crm-backend-production-2231.up.railway.app/"]
-        except:
-            self.base_url = "http://localhost:8000"
-        self.base_url = "http://localhost:8000"
->>>>>>> 9636cc5509e8a997b00a7c41b12edb5d2efcaa21
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
