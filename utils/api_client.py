@@ -1,19 +1,15 @@
-import requests
-import streamlit as st
-
 import streamlit as st
 import requests
 import os
 
 class APIClient:
     def __init__(self):
-        # FIXED: Use Railway backend URL via Streamlit secrets
-        try:
-            self.base_url = st.secrets["https://crm-backend-production-2231.up.railway.app/"]
-            st.info(f"✅ Connected to backend: {self.base_url}")
-        except KeyError:
-            # Fallback for local development
-            self.base_url = "http://localhost:8000"
+        # Use environment variable for backend URL (Render deployment)
+        self.base_url = os.getenv("BACKEND_URL", "http://localhost:8000")
+        
+        if "localhost" not in self.base_url:
+            st.success(f"✅ Connected to Render backend: {self.base_url}")
+        else:
             st.warning("⚠️ Using localhost backend (development mode)")
         
         self.session = requests.Session()
@@ -27,43 +23,29 @@ class APIClient:
             url = f"{self.base_url}{endpoint}"
             
             if method.upper() == 'GET':
-                response = self.session.get(url, params=params, timeout=10)
+                response = self.session.get(url, params=params, timeout=30)
             elif method.upper() == 'POST':
-                response = self.session.post(url, json=data, params=params, timeout=10)
+                response = self.session.post(url, json=data, params=params, timeout=30)
             elif method.upper() == 'PUT':
-                response = self.session.put(url, json=data, params=params, timeout=10)
+                response = self.session.put(url, json=data, params=params, timeout=30)
             elif method.upper() == 'DELETE':
-                response = self.session.delete(url, timeout=10)
+                response = self.session.delete(url, timeout=30)
             
             if response.status_code == 200:
                 if success_message:
                     st.success(success_message)
                 return response.json()
             else:
-                error_detail = response.json().get('detail', 'Unknown error') if response.headers.get('content-type') == 'application/json' else f"HTTP {response.status_code}"
+                error_detail = response.json().get('detail', 'Unknown error') if 'application/json' in response.headers.get('content-type', '') else f"HTTP {response.status_code}"
                 st.error(f"❌ API Error: {error_detail}")
                 return None
             
         except requests.exceptions.ConnectionError:
-            st.error(f"❌ Cannot connect to backend server at {self.base_url}. Please check if backend is running.")
+            st.error(f"❌ Cannot connect to backend server at {self.base_url}")
             return None
         except Exception as e:
             st.error(f"❌ Request failed: {str(e)}")
             return None
-    
-    # Your existing API methods...
-    def get_customers(self, search=None):
-        params = {'search': search} if search else None
-        return self._make_request('GET', '/customers', params=params) or []
-    
-    def get_campaigns(self):
-        return self._make_request('GET', '/campaigns') or []
-    
-    def create_campaign(self, campaign_data):
-        return self._make_request('POST', '/campaigns', data=campaign_data, success_message="🚀 Campaign launched!")
-    
-    def get_dashboard_stats(self):
-        return self._make_request('GET', '/analytics/dashboard')
     
     # ================================
     # CUSTOMER CRUD METHODS

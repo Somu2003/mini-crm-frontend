@@ -15,19 +15,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-class APIClient:
-    def __init__(self):
-        # Replace with your actual Railway URL
-        self.base_url = "crm-backend-production-2231.up.railway.app"
-        
-        # Alternative: Use environment variables
-        # self.base_url = os.getenv("BACKEND_URL", "http://localhost:8000")
-        
-        self.session = requests.Session()
-        self.session.headers.update({
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        })
+
 # Custom CSS for beautiful dashboard
 st.markdown("""
 <style>
