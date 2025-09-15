@@ -37,6 +37,9 @@ It provides an interface for users to manage customers, create campaigns, view a
    ```
 
 ---
+## Architecture Diagram
+
+<img width="237" height="892" alt="image" src="https://github.com/user-attachments/assets/1a9822b7-9dd3-480d-ac60-20aeab11cec1" />
 
 ## ☁️ Deployment on Render
 
